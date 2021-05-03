@@ -2,6 +2,7 @@ from googletrans import Translator
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+import os
 
 
 # translator = Translator()
@@ -10,23 +11,36 @@ from tkinter import ttk
 # print(translator.translate(text, dest='zh-cn').text)
 
 LANGUAGE_CODE = {"Chinese(simplified)":"zh-cn", "Chinese(traditional)":"zh-tw", "Hindi":"hi", "Spanish":"es", "French":"fr","Arabic":"ar"}
+directory = ""
 
 def openFile():
     """
     lets user pick an input txt file and display its contents in inputBox
     """
     txtFile = filedialog.askopenfilename(
-        initialdir= "/",
+        initialdir= "./",
         title = "Open a file",
         filetypes=(("text files", "*.txt"),)
     )
     if txtFile != "":
+        global directory
+        directory = os.path.split(txtFile)[0]
         txtFile = open(txtFile, "r")
         data = txtFile.read()
         # print(data)
         inputBox.delete(1.0, END)
         inputBox.insert(END, data)
         txtFile.close()
+
+def writeFile(data):
+    """
+    writes data to output.txt in the directory of the input file
+    """
+    if directory != "":        
+        f = open(os.path.join(directory, "output.txt"), "w")
+        f.write(data)
+        f.close()
+
 
 def translate():
     """
@@ -37,6 +51,7 @@ def translate():
         translation = translator.translate(text=inputBox.get(1.0, END),dest=LANGUAGE_CODE[languages.get()]).text
         outputBox.delete(1.0, END)
         outputBox.insert(END, translation)
+        writeFile(translation)
     else:
         outputBox.delete(1.0, END)
 
