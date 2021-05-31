@@ -6,13 +6,12 @@ from tkinter import messagebox
 import os
 import json
 
-
-# translator = Translator()
-# text = "Coronavirus disease 2019 (COVID-19), also known as the coronavirus or COVID, is a contagious disease caused by severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2). The first known case was identified in Wuhan, China, in December 2019. The disease has since spread worldwide, leading to an ongoing pandemic."
-
-# print(translator.translate(text, dest='zh-cn').text)
-
-LANGUAGE_CODE = {"Chinese(simplified)":"zh-cn", "Chinese(traditional)":"zh-tw", "Hindi":"hi", "Spanish":"es", "French":"fr","Arabic":"ar"}
+LANGUAGE_CODE = {"Chinese(simplified)":"zh-cn", 
+                "Chinese(traditional)":"zh-tw", 
+                "Hindi":"hi", 
+                "Spanish":"es", 
+                "French":"fr",
+                "Arabic":"ar"}
 # DEFAULT_DIR = "~/Desktop"
 DEFAULT_DIR = "~/"
 
@@ -30,11 +29,14 @@ def openFile():
     if jsonFile != "":
         jsonFile = open(jsonFile, "r")
         data = json.load(jsonFile)
-        # print(data)
-        inputBox.delete(1.0, END)
-        inputBox.insert(END, data["summary"])
-        languages.set(data["language"])
         jsonFile.close()
+        # print(data)
+        if ("summary" not in data) or ("language" not in data):
+            messagebox.showerror("Invalid File", "Invalid input file, please check input file and reopen the application")
+        else:
+            inputBox.delete(1.0, END)
+            inputBox.insert(END, data["summary"])
+            languages.set(data["language"])
 
 def writeFile(data):
     """
@@ -67,7 +69,7 @@ def clearBoxes():
 
 # create display window 
 root = Tk()
-root.geometry('1080x500')
+root.geometry("1080x500")
 root.resizable(0,0) # cannot resize window
 root.config(bg="white smoke")
 root.title("Transformation Service - Translator")
@@ -106,8 +108,11 @@ if "input.json" in os.listdir(os.path.expanduser(DEFAULT_DIR)):
     f = open(os.path.expanduser(DEFAULT_DIR)+"/input.json", "r")
     data = json.load(f)
     f.close()
-    inputBox.insert(END, data["summary"])
-    languages.set(data["language"])
-    translate()
+    if ("summary" not in data) or ("language" not in data):
+        messagebox.showerror("Invalid File", "Invalid input file, please check input file and reopen the application")
+    else:
+        inputBox.insert(END, data["summary"])
+        languages.set(data["language"])
+        translate()
 
 root.mainloop()
